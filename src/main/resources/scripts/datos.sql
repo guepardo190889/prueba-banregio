@@ -30,7 +30,7 @@ INSERT INTO cuentas (id, cliente_id, monto, estado) VALUES
 -- Cliente 00103228 (id cliente = 1)
 INSERT INTO prestamos (id, cliente_id, fecha, monto, estado) VALUES
   (1, 1, TIMESTAMP '2021-01-10 00:00:00', 37500.00, 'PENDIENTE'),
-  (2, 1, TIMESTAMP '2021-01-19 00:00:00',   725.18, 'PAGADO'),
+  (2, 1, TIMESTAMP '2021-01-19 00:00:00',   725.18, 'PENDIENTE'),
   (3, 1, TIMESTAMP '2021-01-31 00:00:00',  1578.22, 'PENDIENTE'),
   (4, 1, TIMESTAMP '2021-02-04 00:00:00',   380.00, 'PENDIENTE');
 

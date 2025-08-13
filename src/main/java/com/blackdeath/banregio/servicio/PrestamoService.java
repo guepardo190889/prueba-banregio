@@ -15,7 +15,10 @@ import com.blackdeath.banregio.entidad.Prestamo;
 import com.blackdeath.banregio.entidad.PrestamoEstado;
 import com.blackdeath.banregio.helper.CuentaHelper;
 import com.blackdeath.banregio.helper.PagoHelper;
+import com.blackdeath.banregio.helper.PagoHelper.DatoPago;
+import com.blackdeath.banregio.modelo.CuentaModel;
 import com.blackdeath.banregio.modelo.PagoPrestamoModel;
+import com.blackdeath.banregio.modelo.PrestamoModel;
 import com.blackdeath.banregio.repositorio.CuentaRepository;
 import com.blackdeath.banregio.repositorio.PrestamoRepository;
 
@@ -81,29 +84,27 @@ public class PrestamoService {
 	private PagoPrestamoModel pagarPorCuenta(Cuenta cuenta, List<Prestamo> prestamos, LocalDate fechaActual,
 			BigDecimal tasaInteres, int diasAnioComercial, BigDecimal tasaIva) {
 		if (CuentaHelper.tieneSaldo(cuenta)) {
-			List<Prestamo> prestamosPagados = new ArrayList<>();
+			List<PrestamoModel> prestamosPagados = new ArrayList<>();
 
 			for (Prestamo prestamoPendiente : prestamos) {
-				BigDecimal montoPago = PagoHelper.calularMontoPago(fechaActual, prestamoPendiente.getFecha(),
+				DatoPago datoPago = PagoHelper.calularMontoPago(fechaActual, prestamoPendiente.getFecha(),
 						prestamoPendiente.getMonto(), tasaInteres, diasAnioComercial, tasaIva);
 
-				if (CuentaHelper.tieneSaldoSuficienteParaPagarPrestamo(cuenta, montoPago)) {
+				if (CuentaHelper.tieneSaldoSuficienteParaPagarPrestamo(cuenta, datoPago.pago())) {
 					prestamoPendiente.setEstado(PrestamoEstado.PAGADO);
-					cuenta.setMonto(cuenta.getMonto().subtract(montoPago));
+					cuenta.setMonto(cuenta.getMonto().subtract(datoPago.pago()));
 
 					prestamoRepository.save(prestamoPendiente);
 					cuenta = cuentaRepository.save(cuenta);
 
-					prestamosPagados.add(prestamoPendiente);
+					prestamosPagados.add(new PrestamoModel(datoPago, prestamoPendiente));
 				}
 			}
 
-			return new PagoPrestamoModel(prestamosPagados, cuenta.getMonto());
+			return new PagoPrestamoModel(prestamosPagados,
+					new CuentaModel(cuenta.getCliente().getNumero(), cuenta.getMonto()));
 		}
 
 		return null;
-	}
-
-	public record ResultadoPagoCuenta(List<Prestamo> prestamosPagados, BigDecimal saldoCuenta) {
 	}
 }

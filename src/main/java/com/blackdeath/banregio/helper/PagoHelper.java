@@ -11,6 +11,9 @@ import java.util.Objects;
  */
 public class PagoHelper {
 
+	public record DatoPago(int plazo, BigDecimal interes, BigDecimal iva, BigDecimal pago) {
+	}
+
 	/**
 	 * Calcula el monto del pago
 	 * 
@@ -22,14 +25,15 @@ public class PagoHelper {
 	 * @param tasaIva
 	 * @return
 	 */
-	public static BigDecimal calularMontoPago(LocalDate fechaActual, LocalDate fechaPrestamo, BigDecimal montoPrestamo,
+	public static DatoPago calularMontoPago(LocalDate fechaActual, LocalDate fechaPrestamo, BigDecimal montoPrestamo,
 			BigDecimal tasaInteres, int diasAnioComercial, BigDecimal tasaIva) {
 
 		int plazo = calcularPlazo(fechaActual, fechaPrestamo);
 		BigDecimal interes = calcularInteres(montoPrestamo, plazo, tasaInteres, diasAnioComercial);
 		BigDecimal iva = calcularIva(interes, tasaIva);
+		BigDecimal pago = montoPrestamo.multiply(interes).add(iva);
 
-		return montoPrestamo.multiply(interes).add(iva);
+		return new DatoPago(plazo, interes, iva, pago);
 	}
 
 	/**

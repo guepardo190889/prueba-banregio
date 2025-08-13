@@ -1,10 +1,9 @@
 package com.blackdeath.banregio.modelo;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import com.blackdeath.banregio.entidad.Prestamo;
-import com.blackdeath.banregio.entidad.PrestamoEstado;
+import com.blackdeath.banregio.helper.PagoHelper.DatoPago;
 
 import lombok.Data;
 
@@ -14,21 +13,24 @@ import lombok.Data;
 @Data
 public class PrestamoModel {
 
-	private Long id;
-
 	private String numeroCliente;
 
-	private LocalDate fecha;
+	private int plazo;
 
 	private BigDecimal monto;
 
-	private PrestamoEstado estado;
+	private BigDecimal interes;
 
-	public PrestamoModel(Prestamo prestamo) {
-		id = prestamo.getId();
+	private BigDecimal iva;
+
+	private BigDecimal pago;
+
+	public PrestamoModel(DatoPago datoPago, Prestamo prestamo) {
 		numeroCliente = prestamo.getCliente().getNumero();
-		fecha = prestamo.getFecha();
-		monto = prestamo.getMonto();
-		estado = prestamo.getEstado();
+		plazo = datoPago.plazo();
+		monto = datoPago.pago();
+		interes = datoPago.interes();
+		iva = datoPago.iva();
+		pago = datoPago.pago();
 	}
 }
