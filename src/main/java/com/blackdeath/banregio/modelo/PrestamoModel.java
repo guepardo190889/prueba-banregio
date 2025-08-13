@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 public class PrestamoModel {
 
-	private String numeroCliente;
+	private String cliente;
 
 	private int plazo;
 
@@ -26,9 +26,9 @@ public class PrestamoModel {
 	private BigDecimal pago;
 
 	public PrestamoModel(DatoPago datoPago, Prestamo prestamo) {
-		numeroCliente = prestamo.getCliente().getNumero();
+		cliente = prestamo.getCliente().getNumero();
 		plazo = datoPago.plazo();
-		monto = datoPago.pago();
+		monto = prestamo.getMonto();
 		interes = datoPago.interes();
 		iva = datoPago.iva();
 		pago = datoPago.pago();

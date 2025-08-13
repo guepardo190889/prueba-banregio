@@ -11,6 +11,9 @@ import java.util.Objects;
  */
 public class PagoHelper {
 
+	private static final int escala = 2;
+	private static final RoundingMode redondeo = RoundingMode.HALF_UP;
+
 	public record DatoPago(int plazo, BigDecimal interes, BigDecimal iva, BigDecimal pago) {
 	}
 
@@ -31,7 +34,8 @@ public class PagoHelper {
 		int plazo = calcularPlazo(fechaActual, fechaPrestamo);
 		BigDecimal interes = calcularInteres(montoPrestamo, plazo, tasaInteres, diasAnioComercial);
 		BigDecimal iva = calcularIva(interes, tasaIva);
-		BigDecimal pago = montoPrestamo.multiply(interes).add(iva);
+		BigDecimal pago = montoPrestamo.add(interes).add(iva).setScale(escala, redondeo);
+		;
 
 		return new DatoPago(plazo, interes, iva, pago);
 	}
@@ -77,9 +81,6 @@ public class PagoHelper {
 			throw new IllegalArgumentException("tasaInteresAnual no puede ser negativa");
 		}
 
-		int escala = 2;
-		RoundingMode redondeo = RoundingMode.HALF_UP;
-
 		if (montoPrestamo.signum() == 0 || plazo == 0 || tasaInteres.signum() == 0) {
 			return BigDecimal.ZERO.setScale(escala, redondeo);
 		}
@@ -100,7 +101,7 @@ public class PagoHelper {
 	private static BigDecimal calcularIva(BigDecimal interes, BigDecimal tasaIva) {
 		BigDecimal tasaIvaDecimal = porcentajeDecimal(tasaIva);
 
-		return interes.multiply(tasaIvaDecimal);
+		return interes.multiply(tasaIvaDecimal).setScale(escala, redondeo);
 	}
 
 	/**

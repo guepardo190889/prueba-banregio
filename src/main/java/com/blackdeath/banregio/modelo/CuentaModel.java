@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class CuentaModel {
 
-	private String numeroCliente;
+	private String cliente;
 
 	private BigDecimal monto;
 }
